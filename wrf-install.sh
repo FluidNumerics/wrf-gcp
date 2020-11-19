@@ -140,9 +140,20 @@ function install_aomp_openmpi {
   # Install WRF
   #spack install wrf@4.2+pnetcdf%aomp@3.9.0
 
-
 }
 
+function install_intel {
+
+  spack install intel-parallel-studio % gcc@4.8.5
+
+  spack load intel-paralell-studio@3.9.0
+  spack compiler find --scope site
+
+  # May need to hand edit compilers.yaml to add intel compilers.
+  # Install OpenMPI
+  # Install WRF
+
+}
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><> #
 # Main
 
