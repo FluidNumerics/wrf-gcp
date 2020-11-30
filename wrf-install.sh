@@ -144,13 +144,14 @@ function install_aomp_openmpi {
 
 function install_intel {
 
-  spack install intel-parallel-studio % gcc@4.8.5
+  spack intel-parallel-studio@cluster.2020.2 % gcc@4.8.5
 
-  spack load intel-paralell-studio@3.9.0
+  spack load intel-paralell-studio@cluster.2020.2
   spack compiler find --scope site
 
   # May need to hand edit compilers.yaml to add intel compilers.
   # Install OpenMPI
+  # spack install intel-mpi@2019.8.254%
   # Install WRF
 
 }
