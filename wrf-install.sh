@@ -52,115 +52,41 @@ function install_spack {
 
   spack compiler find --scope site
 
-  setup_packages_yaml
 }
 
-function setup_packages_yaml {
-
-  source_packages
-
-  # Install additional system dependencies
+function install_additional_systempackages {
   yum install -y libseccomp-devel
-
-  # Create a packages.yaml file
-  spack external find --scope site
-
-  # Hand-edits for packages.yaml
-  # Add Slurm to site packages.yaml
-  {
-    echo "  slurm:"
-    echo "    externals:"
-    echo "    - spec: slurm@${SLURM_VER}"
-    echo "      prefix: /apps/slurm/current"
-  } >> /apps/spack/etc/spack/packages.yaml
-  
-  # Add libseccomp to site packages.yaml
-  {
-    echo "  libseccomp:"
-    echo "    externals:"
-    echo "    - spec: libseccomp@2.3.1"
-    echo "      prefix: /usr"
-  } >> /apps/spack/etc/spack/packages.yaml
-  # Add numactl to site packages.yaml
-  {
-    echo "  numactl:"
-    echo "    externals:"
-    echo "    - spec: numactl@2.0.12"
-    echo "      prefix: /usr"
-  } >> /apps/spack/etc/spack/packages.yaml
-  # Add squashfs to site packages.yaml
-  {
-    echo "  squashfs:"
-    echo "    externals:"
-    echo "    - spec: squashfs@4.3"
-    echo "      prefix: /usr/sbin"
-  } >> /apps/spack/etc/spack/packages.yaml
-  # Add lustre to site packages.yaml
-  {
-    echo "  lustre:"
-    echo "    externals:"
-    echo "    - spec: lustre@2.12.5"
-    echo "      prefix: /usr"
-  } >> /apps/spack/etc/spack/packages.yaml
 }
 
-function install_gcc_openmpi {
+function install_aomp {
 
-  source_packages
-  
-  # Install gcc - Build using the system installed gcc 4.8.5
-  spack install gcc@10.2.0 % gcc@4.8.5
-  spack load gcc@10.2.0
-  spack compiler find --scope site
-
-  # Install OpenMPI
-  spack install openmpi@4.0.2%gcc@10.2.0~atomics+cuda+cxx+cxx_exceptions+gpfs~java+legacylaunchers+lustre+memchecker+pmi+singularity~sqlite3+static~thread_multiple+vt+wrapper-rpath fabrics=auto schedulers=slurm
-
-  # Install WRF
-  spack install wrf@4.2+pnetcdf%gcc@10.2.0
-
-  spack unload gcc@10.2.0
+  # Install ROCm AOMP for clang, flang, and clang-cpp
+  wget https://github.com/ROCm-Developer-Tools/aomp/releases/download/rel_11.11-2/aomp_REDHAT_7-11.11-2.x86_64.rpm
+  rpm -i aomp_REDHAT_7-11.11-2.x86_64.rpm
 
 }
 
-function install_aomp_openmpi {
+function setup_wrf_envs {
 
-  # For Clang, we are using AMD's AOMP compiler (v3.9.0)
-  # The aomp package is built using the system installed gcc 4.8.5
-  spack install aomp@3.9.0 % gcc@4.8.5
+  source /etc/profile.d/setup_spack.sh
 
-  spack load aomp@3.9.0
-  spack compiler find --scope site
-
-  # May need to hand edit compilers.yaml to add clang flang/f18 combination here.
-
-  # Install OpenMPI
-#  spack install openmpi@4.0.2%aomp@3.9.0~atomics+cuda+cxx+cxx_exceptions+gpfs~java+legacylaunchers+lustre+memchecker+pmi+singularity~sqlite3+static~thread_multiple+vt+wrapper-rpath fabrics=auto schedulers=slurm
-
-  # Install WRF
-  #spack install wrf@4.2+pnetcdf%aomp@3.9.0
-
-}
-
-function install_intel {
-
-  spack intel-parallel-studio@cluster.2020.2 % gcc@4.8.5
-
-  spack load intel-paralell-studio@cluster.2020.2
-  spack compiler find --scope site
-
-  # May need to hand edit compilers.yaml to add intel compilers.
-  # Install OpenMPI
-  # spack install intel-mpi@2019.8.254%
-  # Install WRF
+  # GCC + OpenMPI
+  spack env create wrf_gcc_openmpi
+  cp spack/wrf_gcc_openmpi/spack.yaml /apps/spack/environments/wrf_gcc_openmpi/spack.yaml
+  spack env activate wrf_gcc_openmpi
+  spack concretize
 
 }
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><> #
 # Main
 
+install_additional_systempackages
+
 install_lustre_client
 
 install_spack
 
-install_gcc_openmpi
+install_aomp
+
+setup_wrf_envs
 

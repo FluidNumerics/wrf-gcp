@@ -41,7 +41,7 @@ locals {
   primary_region = trimsuffix(var.primary_zone,substr(var.primary_zone,-2,-2))
   slurm_gcp_admins = ["group:${var.cluster_name}-slurm-gcp-admins@${var.managing_domain}"]
   slurm_gcp_users = ["group:${var.cluster_name}-slurm-gcp-users@${var.managing_domain}"]
-  cluster_name = "${var.cluster_name}-slurm"
+  cluster_name = "${var.cluster_name}"
 }
 
 // Mark the Controller project as the Shared VPC Host Project
@@ -229,8 +229,9 @@ resource "random_id" "db_name_suffix" {
 
 resource "google_sql_database_instance" "slurm_db" {
   provider = google-beta
-  name = "${var.cluster_name}-slurm-db-${random_id.db_name_suffix.hex}"
+  name = "${var.cluster_name}-db-${random_id.db_name_suffix.hex}"
   database_version = "MYSQL_5_6"
+  deletion_protection = false
   region = local.primary_region
   project = var.primary_project
   depends_on = [google_service_networking_connection.private_vpc_connection,google_project_service.sql_admin,google_project_service.compute]
