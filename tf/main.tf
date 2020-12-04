@@ -257,7 +257,7 @@ locals {
 locals {
   controller = {
     machine_type = var.controller_machine_type
-    disk_size_gb = 30
+    disk_size_gb = 100
     disk_type = "pd-standard"
     labels = {"slurm-gcp"="controller"}
     project = var.primary_project
@@ -267,7 +267,7 @@ locals {
   }
   login = [{
     machine_type = var.login_machine_type
-    disk_size_gb = 30
+    disk_size_gb = 100
     disk_type = "pd-standard"
     labels = {"slurm-gcp"="login"}
     project = var.primary_project
