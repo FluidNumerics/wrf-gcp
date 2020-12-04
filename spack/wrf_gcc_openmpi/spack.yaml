@@ -5,8 +5,7 @@
 spack:
   # add package specs to the `specs` list
   specs:
-  - wrf@4.2 ^openmpi@4.0.2%gcc@10.2.0~atomics~cuda+cxx+cxx_exceptions+gpfs~java+legacylaunchers+lustre+memchecker+pmi~singularity~sqlite3+static~thread_multiple+vt+wrapper-rpath
-    fabrics=auto schedulers=slurm
+  - wrf@4.2 ^openmpi@4.0.2%gcc@10.2.0~atomics~cuda+cxx+cxx_exceptions+gpfs~java+legacylaunchers+lustre+memchecker+pmi~singularity~sqlite3+static~thread_multiple+vt+wrapper-rpath fabrics=auto schedulers=slurm
   view: true
   packages:
     autoconf:
@@ -278,6 +277,15 @@ spack:
       externals:
       - spec: squashfs@4.3
         prefix: /usr/sbin
+      version: []
+      target: []
+      compiler: []
+      buildable: true
+      providers: {}
+    tcsh:
+      externals:
+      - spec: tcsh@6.18.01
+        prefix: /usr
       version: []
       target: []
       compiler: []
