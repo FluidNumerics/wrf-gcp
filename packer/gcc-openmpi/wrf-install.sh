@@ -195,3 +195,7 @@ prepend-path            PATH             ${INSTALL_ROOT}/WRF-${WRF_VERSION}/run
 module load netcdf/${NETCDF_C_VERSION} jasper/${JASPER_VERSION}
 
 EOL
+
+rm -rf /tmp/*
+rm -rf /var/tmp/*
+
