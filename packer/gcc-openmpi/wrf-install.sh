@@ -182,7 +182,7 @@ wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WRF_VERSION}.tar.gz -C /opt
 cp /tmp/configure.wrf /opt/WRF-${WRF_VERSION}
 cd /opt/WRF-${WRF_VERSION}
-./compile -j$(nproc) em_real
+./compile -j $(nproc) em_real
 
 mkdir -p ${INSTALL_ROOT}/modulefiles/wrf
 cat > ${INSTALL_ROOT}/modulefiles/wrf/${WRF_VERSION} <<EOL

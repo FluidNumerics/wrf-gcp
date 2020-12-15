@@ -18,7 +18,7 @@ substitutions:
     _SUBNETWORK : 'default'
     _SOURCE_IMAGE : 'fluid-slurm-gcp-compute-centos'
     _SOURCE_IMAGE_PROJECT : 'fluid-cluster-ops'
-    _IMAGE_NAME: 'wrf-gcp_gcc-openmpi'
+    _IMAGE_NAME: 'wrf-gcp-gcc-openmpi'
     _BUILD_FLAVOR: 'gcc-openmpi'
 
 timeout : 14400s

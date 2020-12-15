@@ -26,7 +26,7 @@
     {
       "type": "file",
       "source": "./gcc-openmpi/configure.wrf",
-      "destination": "/tmp"
+      "destination": "/tmp/configure.wrf"
     },
     {
       "type": "shell",
