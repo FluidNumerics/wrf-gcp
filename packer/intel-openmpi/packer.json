@@ -2,7 +2,7 @@
   "variables": {
     "project_id": "",
     "zone": "us-central1-f",
-    "image_name":"wrf-gcp-gcc-openmpi",
+    "image_name":"wrf-gcp-intel-openmpi",
     "subnet": "default",
     "source_image": "fluid-slurm-gcp-compute-centos",
     "source_image_project": "fluid-cluster-ops"
@@ -25,18 +25,18 @@
   "provisioners": [
     {
       "type": "file",
-      "source": "./gcc-openmpi/sysctl.conf",
+      "source": "./intel-openmpi/sysctl.conf",
       "destination": "/etc/sysctl.conf"
     },
     {
       "type": "file",
-      "source": "./gcc-openmpi/configure.wrf",
+      "source": "./intel-openmpi/configure.wrf",
       "destination": "/tmp/configure.wrf"
     },
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
-      "script": "./gcc-openmpi/wrf-install.sh"
+      "script": "./intel-openmpi/wrf-install.sh"
     }
   ]
 }

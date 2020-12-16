@@ -1,0 +1,8 @@
+GRUB_TIMEOUT=0
+GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
+GRUB_DEFAULT=saved
+GRUB_DISABLE_SUBMENU=true
+GRUB_TERMINAL="serial console"
+GRUB_SERIAL_COMMAND="serial --speed=38400"
+GRUB_CMDLINE_LINUX="crashkernel=auto console=ttyS0,38400n8 elevator=noop nouveau.modeset=0 rd.driver.blacklist=nouveau"
+GRUB_DISABLE_RECOVERY="true"
