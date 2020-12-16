@@ -34,6 +34,11 @@
       "destination": "/tmp/configure.wrf"
     },
     {
+      "type": "file",
+      "source": "./gcc-openmpi/configure.wrf",
+      "destination": "/tmp/configure.wps"
+    },
+    {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
       "script": "./gcc-openmpi/wrf-install.sh"

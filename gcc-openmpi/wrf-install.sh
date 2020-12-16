@@ -7,6 +7,7 @@ NETCDF_C_VERSION="4.7.4"
 NETCDF_FORTRAN_VERSION="4.5.3"
 JASPER_VERSION="2.0.16"
 WRF_VERSION="4.2"
+WPS_VERSION="4.2"
 
 
 yum install -y cmake curl-devel tcsh
@@ -168,7 +169,8 @@ prepend-path            PATH             ${INSTALL_ROOT}/jasper/bin
 EOL
 
 ## Install WRF
-export PATH=${PATH}:${INSTALL_ROOT}/openmpi/bin
+export I_really_want_to_output_grib2_from_WRF="TRUE" 
+export PATH=${PATH}:${INSTALL_ROOT}/openmpi/bin:${INSTALL_ROOT}/netcdf/bin
 export NETCDF="${INSTALL_ROOT}/netcdf"
 export PNETCDF="${INSTALL_ROOT}/netcdf"
 export NETCDFF="${INSTALL_ROOT}/netcdf"
@@ -177,12 +179,25 @@ export JASPERINC="${INSTALL_ROOT}/jasper/include"
 export JASPERLIB="${INSTALL_ROOT}/jasper/lib64"
 export FC="${INSTALL_ROOT}/openmpi/bin/mpif90"
 export CC="${INSTALL_ROOT}/openmpi/bin/mpicc"
+export WRF_DIR=${INSTALL_ROOT}/WRF-${WRF_VERSION}
 
 wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WRF_VERSION}.tar.gz -C /opt
 cp /tmp/configure.wrf /opt/WRF-${WRF_VERSION}
+sed -i 's/\ $I_really_want_to_output_grib2_from_WRF = "FALSE" ;//g' /opt/WRF-${WRF_VERSION}/arch/Config.pl 
 cd /opt/WRF-${WRF_VERSION}
 ./compile -j $(nproc) em_real
+rm /opt/v${WRF_VERSION}.tar.gz
+
+# Install WPS
+wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P /opt
+tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C /opt
+cp /tmp/configure.wps /opt/WPS-${WPS_VERSION}
+cd /opt/WPS-${WPS_VERSION}
+./compile
+
+rm -rf /tmp/*
+rm -rf /var/tmp/*
 
 mkdir -p ${INSTALL_ROOT}/modulefiles/wrf
 cat > ${INSTALL_ROOT}/modulefiles/wrf/${WRF_VERSION} <<EOL
@@ -191,14 +206,11 @@ cat > ${INSTALL_ROOT}/modulefiles/wrf/${WRF_VERSION} <<EOL
 conflict                wrf
 
 prepend-path            PATH             ${INSTALL_ROOT}/WRF-${WRF_VERSION}/run
+prepend-path            PATH             ${INSTALL_ROOT}/WPS-${WPS_VERSION}
 
 module load netcdf/${NETCDF_C_VERSION} jasper/${JASPER_VERSION}
 
 EOL
-
-rm -rf /tmp/*
-rm -rf /var/tmp/*
-
 
 
 cat > /opt/setup.sh <<EOL
