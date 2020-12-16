@@ -67,7 +67,6 @@ prepend-path            PATH             ${INSTALL_ROOT}/hdf5/bin
 prepend-path            PATH             ${INSTALL_ROOT}/hdf5/include
 
 setenv HDF5_DIR ${INSTALL_ROOT}/hdf5
-source /opt/intel/oneapi/setvars.sh
 
 EOL
 
