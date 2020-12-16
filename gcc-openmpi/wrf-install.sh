@@ -199,3 +199,11 @@ EOL
 rm -rf /tmp/*
 rm -rf /var/tmp/*
 
+
+
+cat > /opt/setup.sh <<EOL
+#!/bin/bash
+
+module use /opt/modulefiles
+module load wrf/${WRF_VERSION}
+EOL

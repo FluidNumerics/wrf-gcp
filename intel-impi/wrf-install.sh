@@ -7,6 +7,9 @@ NETCDF_FORTRAN_VERSION="4.5.3"
 JASPER_VERSION="2.0.16"
 WRF_VERSION="4.2"
 
+
+mv /tmp/systemctl.conf /etc/systemctl.conf
+
 yum install -y cmake curl-devel tcsh
 
 # Install the oneAPI base kit and HPC toolkit
@@ -180,3 +183,10 @@ EOL
 rm -rf /tmp/*
 rm -rf /var/tmp/*
 
+cat > /opt/setup.sh <<EOL
+#!/bin/bash
+
+source /opt/intel/oneapi/setvars.sh
+module use /opt/modulefiles
+module load wrf/${WRF_VERSION}
+EOL
