@@ -10,7 +10,7 @@ WRF_VERSION="4.2"
 WPS_VERSION="4.2"
 
 
-yum install -y cmake curl-devel tcsh
+yum install -y cmake curl-devel tcsh libjasper-devel libpng-devel
 
 ## Install the GCC-9 devtoolset
 yum -y update
@@ -192,8 +192,10 @@ rm /opt/v${WRF_VERSION}.tar.gz
 # Install WPS
 wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C /opt
-cp /tmp/configure.wps /opt/WPS-${WPS_VERSION}
 cd /opt/WPS-${WPS_VERSION}
+./configure << EOF
+1
+EOF
 ./compile
 
 rm -rf /tmp/*
@@ -207,6 +209,10 @@ conflict                wrf
 
 prepend-path            PATH             ${INSTALL_ROOT}/WRF-${WRF_VERSION}/run
 prepend-path            PATH             ${INSTALL_ROOT}/WPS-${WPS_VERSION}
+
+setenv INSTALL_ROOT ${INSTALL_ROOT}
+setenv WRF_VERSION ${WRF_VERSION}
+setenv WPS_VERSION ${WPS_VERSION}
 
 module load netcdf/${NETCDF_C_VERSION} jasper/${JASPER_VERSION}
 
