@@ -192,10 +192,8 @@ rm /opt/v${WRF_VERSION}.tar.gz
 # Install WPS
 wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C /opt
+cp /tmp/configure.wps /opt/WPS-${WPS_VERSION}
 cd /opt/WPS-${WPS_VERSION}
-./configure << EOF
-1
-EOF
 ./compile
 
 rm -rf /tmp/*

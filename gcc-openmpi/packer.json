@@ -12,7 +12,7 @@
     "project_id": "{{user `project_id`}}",
     "source_image": "{{user `source_image`}}",
     "source_image_project_id": "{{user `source_image_project`}}",
-    "disk_size": 200,
+    "disk_size": 150,
     "machine_type": "n1-standard-8",
     "zone": "{{user `zone`}}",
     "subnetwork" :"{{user `subnet`}}",
@@ -25,18 +25,23 @@
   "provisioners": [
     {
       "type": "file",
-      "source": "./gcc-openmpi/configure.wrf",
-      "destination": "/tmp/configure.wrf"
+      "sources": ["./gcc-openmpi/configure.wrf","./gcc-openmpi/configure.wps"],
+      "destination": "/tmp/"
     },
     {
       "type": "file",
-      "source": "./gcc-openmpi/configure.wrf",
-      "destination": "/tmp/configure.wps"
+      "source": "./benchmark/",
+      "destination": "/tmp/"
     },
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
       "script": "./gcc-openmpi/wrf-install.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
+      "script": "./benchmark/data-install.sh"
     }
   ]
 }
