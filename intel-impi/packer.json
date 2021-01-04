@@ -25,18 +25,23 @@
   "provisioners": [
     {
       "type": "file",
-      "source": "./intel-impi/sysctl.conf",
-      "destination": "/etc/sysctl.conf"
+      "sources": ["./intel-impi/configure.wrf","./intel-impi/configure.wps"],
+      "destination": "/tmp/"
     },
     {
       "type": "file",
-      "source": "./intel-impi/configure.wrf",
-      "destination": "/tmp/configure.wrf"
+      "source": "./benchmark/",
+      "destination": "/tmp/"
     },
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
       "script": "./intel-impi/wrf-install.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
+      "script": "./benchmark/data-install.sh"
     }
   ]
 }

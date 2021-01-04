@@ -52,7 +52,6 @@ setenv MPICC ${INSTALL_ROOT}/openmpi/bin/mpicc
 setenv MPIFC ${INSTALL_ROOT}/openmpi/bin/mpif90
 setenv MPIEXEC ${INSTALL_ROOT}/openmpi/bin/mpiexec
 
-source-sh bash /opt/rh/devtoolset-9/enable
 EOL
 
 ## Install hdf5
@@ -140,8 +139,12 @@ prepend-path            PATH             ${INSTALL_ROOT}/netcdf/bin
 
 setenv NETCDF_C_VERSION ${NETCDF_C_VERSION}
 setenv NETCDF_FORTRAN_VERSION ${NETCDF_FORTRAN_VERSION}
+setenv NETCDF ${INSTALL_ROOT}/netcdf
+setenv NETCDFF ${INSTALL_ROOT}/netcdf
+setenv PNETCDF ${INSTALL_ROOT}/netcdf
 
 module load hdf5/${HDF5_VERSION}
+
 
 EOL
 
@@ -166,6 +169,8 @@ conflict                jasper
 prepend-path            LD_LIBRARY_PATH             ${INSTALL_ROOT}/jasper/lib64
 prepend-path            PATH             ${INSTALL_ROOT}/jasper/bin
 
+setenv JASPERLIB ${INSTALL_ROOT}/jasper/lib64
+setenv JASPERINC ${INSTALL_ROOT}/jasper/include/jasper
 EOL
 
 ## Install WRF
@@ -183,17 +188,21 @@ export WRF_DIR=${INSTALL_ROOT}/WRF-${WRF_VERSION}
 
 wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WRF_VERSION}.tar.gz -C /opt
-cp /tmp/configure.wrf /opt/WRF-${WRF_VERSION}
 sed -i 's/\ $I_really_want_to_output_grib2_from_WRF = "FALSE" ;//g' /opt/WRF-${WRF_VERSION}/arch/Config.pl 
 cd /opt/WRF-${WRF_VERSION}
+./configure << EOL
+34
+EOL
 ./compile -j $(nproc) em_real
 rm /opt/v${WRF_VERSION}.tar.gz
 
 # Install WPS
 wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C /opt
-cp /tmp/configure.wps /opt/WPS-${WPS_VERSION}
 cd /opt/WPS-${WPS_VERSION}
+./configure << EOL
+1
+EOL
 ./compile
 
 rm -rf /tmp/*
@@ -211,6 +220,7 @@ prepend-path            PATH             ${INSTALL_ROOT}/WPS-${WPS_VERSION}
 setenv INSTALL_ROOT ${INSTALL_ROOT}
 setenv WRF_VERSION ${WRF_VERSION}
 setenv WPS_VERSION ${WPS_VERSION}
+setenv WRF_DIR ${INSTALL_ROOT}/WRF-${WRF_VERSION}
 
 module load netcdf/${NETCDF_C_VERSION} jasper/${JASPER_VERSION}
 
@@ -220,6 +230,7 @@ EOL
 cat > /opt/setup.sh <<EOL
 #!/bin/bash
 
+source /opt/rh/devtoolset-9/enable
 module use /opt/modulefiles
 module load wrf/${WRF_VERSION}
 EOL

@@ -6,11 +6,12 @@ NETCDF_C_VERSION="4.7.4"
 NETCDF_FORTRAN_VERSION="4.5.3"
 JASPER_VERSION="2.0.16"
 WRF_VERSION="4.2"
+WPS_VERSION="4.2"
 
 
-mv /tmp/systemctl.conf /etc/systemctl.conf
+#mv /tmp/systemctl.conf /etc/systemctl.conf
 
-yum install -y cmake curl-devel tcsh
+yum install -y cmake curl-devel tcsh libjasper-devel libpng-devel
 
 # Install the oneAPI base kit and HPC toolkit
 cat >/etc/yum.repos.d/oneAPI.repo <<EOF
@@ -31,10 +32,6 @@ cat > /etc/profile.d/oneapi.sh <<EOF
 source /opt/intel/oneapi/setvars.sh
 EOF
 
-# Set up compilers_and_libraries path for spack compatibility
-mkdir -p /opt/intel/oneapi/mpi/2021.1/compilers_and_libraries/linux/mpi/intel64/
-ln -s /opt/intel/oneapi/mpi/2021.1/* /opt/intel/oneapi/mpi/2021.1/compilers_and_libraries/linux/mpi/intel64/
-
 source /opt/intel/oneapi/setvars.sh
 
 ## Install hdf5
@@ -46,11 +43,11 @@ wget -q -nc --no-check-certificate -P /var/tmp http://www.hdfgroup.org/ftp/HDF5/
 tar -x -f /var/tmp/hdf5-${HDF5_VERSION}.tar.bz2 -C /var/tmp -j
 cd /var/tmp/hdf5-${HDF5_VERSION} 
 # Configure
-CC=/opt/intel/oneapi/mpi/2021.1.1/bin/mpiicc \
-CXX=/opt/intel/oneapi/mpi/2021.1.1/bin/mpiicpc \
-F77=/opt/intel/oneapi/mpi/2021.1.1/bin/mpiifort \
-F90=/opt/intel/oneapi/mpi/2021.1.1/bin/mpiifort \
-FC=/opt/intel/oneapi/mpi/2021.1.1/bin/mpiifort \
+CC=/opt/intel/oneapi/mpi/latest/bin/mpiicc \
+CXX=/opt/intel/oneapi/mpi/latest/bin/mpiicpc \
+F77=/opt/intel/oneapi/mpi/latest/bin/mpiifort \
+F90=/opt/intel/oneapi/mpi/latest/bin/mpiifort \
+FC=/opt/intel/oneapi/mpi/latest/bin/mpiifort \
 ./configure --prefix=${INSTALL_ROOT}/hdf5 --enable-parallel --enable-threadsafe --enable-unsupported --enable-cxx --enable-fortran
 make -j$(nproc)
 make -j$(nproc) install && \
@@ -78,7 +75,7 @@ wget https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz
 tar -xvzf /tmp/pnetcdf-${PNETCDF_VERSION}.tar.gz -C /tmp
 cd /tmp/pnetcdf-${PNETCDF_VERSION}
 ./configure --enable-shared \
-            --prefix=${INSTALL_ROOT}/netcdf --with-mpi=/opt/intel/oneapi/mpi/2021.1.1/
+            --prefix=${INSTALL_ROOT}/netcdf --with-mpi=/opt/intel/oneapi/mpi/latest/
 make check
 make -j install
 
@@ -87,9 +84,9 @@ make -j install
 wget https://github.com/Unidata/netcdf-c/archive/v${NETCDF_C_VERSION}.tar.gz -P /tmp
 tar -xvzf /tmp/v${NETCDF_C_VERSION}.tar.gz -C /tmp
 cd /tmp/netcdf-c-${NETCDF_C_VERSION}
-CC=/opt/intel/oneapi/compiler/2021.1.1/linux/bin/intel64/icc \
-CXX=/opt/intel/oneapi/compiler/2021.1.1/linux/bin/intel64/icpc \
-FC=/opt/intel/oneapi/compiler/2021.1.1/linux/bin/intel64/ifort \
+CC=/opt/intel/oneapi/compiler/latest/linux/bin/intel64/icc \
+CXX=/opt/intel/oneapi/compiler/latest/linux/bin/intel64/icpc \
+FC=/opt/intel/oneapi/compiler/latest/linux/bin/intel64/ifort \
 CPPFLAGS="-I${INSTALL_ROOT}/hdf5/include -I${INSTALL_ROOT}/openmpi/include -I${INSTALL_ROOT}/netcdf/include" \
 LDFLAGS="-L${INSTALL_ROOT}/hdf5/lib -L${INSTALL_ROOT}/netcdf/lib" \
 ./configure --enable-pnetcdf \
@@ -102,9 +99,9 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${INSTALL_ROOT}/netcdf/lib
 wget https://github.com/Unidata/netcdf-fortran/archive/v${NETCDF_FORTRAN_VERSION}.tar.gz -P /tmp
 tar -xvzf /tmp/v${NETCDF_FORTRAN_VERSION}.tar.gz -C /tmp
 cd /tmp/netcdf-fortran-${NETCDF_FORTRAN_VERSION}
-CC=/opt/intel/oneapi/compiler/2021.1.1/linux/bin/intel64/icc \
-CXX=/opt/intel/oneapi/compiler/2021.1.1/linux/bin/intel64/icpc \
-FC=/opt/intel/oneapi/compiler/2021.1.1/linux/bin/intel64/ifort \
+CC=/opt/intel/oneapi/compiler/latest/linux/bin/intel64/icc \
+CXX=/opt/intel/oneapi/compiler/latest/linux/bin/intel64/icpc \
+FC=/opt/intel/oneapi/compiler/latest/linux/bin/intel64/ifort \
 CPPFLAGS="-I${INSTALL_ROOT}/hdf5/include -I${INSTALL_ROOT}/openmpi/include -I${INSTALL_ROOT}/netcdf/include" \
 LDFLAGS="-L${INSTALL_ROOT}/hdf5/lib -L${INSTALL_ROOT}/netcdf/lib" \
 ./configure --prefix=${INSTALL_ROOT}/netcdf
@@ -151,21 +148,36 @@ prepend-path            PATH             ${INSTALL_ROOT}/jasper/bin
 EOL
 
 ## Install WRF
-export PATH=${PATH}:${INSTALL_ROOT}/openmpi/bin
+export I_really_want_to_output_grib2_from_WRF="TRUE" 
+export PATH=${PATH}:${INSTALL_ROOT}/netcdf/bin
 export NETCDF="${INSTALL_ROOT}/netcdf"
 export PNETCDF="${INSTALL_ROOT}/netcdf"
 export NETCDFF="${INSTALL_ROOT}/netcdf"
 export PHDF5="${INSTALL_ROOT}/hdf5"
 export JASPERINC="${INSTALL_ROOT}/jasper/include"
 export JASPERLIB="${INSTALL_ROOT}/jasper/lib64"
-export CC=/opt/intel/oneapi/mpi/2021.1.1/bin/mpiicc
-export FC=/opt/intel/oneapi/mpi/2021.1.1/bin/mpiifort
+export CC=/opt/intel/oneapi/mpi/latest/bin/mpiicc
+export FC=/opt/intel/oneapi/mpi/latest/bin/mpiifort
+export WRF_DIR=${INSTALL_ROOT}/WRF-${WRF_VERSION}
 
 wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WRF_VERSION}.tar.gz -C /opt
-cp /tmp/configure.wrf /opt/WRF-${WRF_VERSION}
+sed -i 's/\ $I_really_want_to_output_grib2_from_WRF = "FALSE" ;//g' /opt/WRF-${WRF_VERSION}/arch/Config.pl 
 cd /opt/WRF-${WRF_VERSION}
+./configure << EOL
+20
+EOL
 ./compile -j $(nproc) em_real
+rm /opt/v${WRF_VERSION}.tar.gz
+
+# Install WPS
+wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P /opt
+tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C /opt
+./configure << EOL
+17
+EOL
+cd /opt/WPS-${WPS_VERSION}
+./compile
 
 mkdir -p ${INSTALL_ROOT}/modulefiles/wrf
 cat > ${INSTALL_ROOT}/modulefiles/wrf/${WRF_VERSION} <<EOL
@@ -174,6 +186,7 @@ cat > ${INSTALL_ROOT}/modulefiles/wrf/${WRF_VERSION} <<EOL
 conflict                wrf
 
 prepend-path            PATH             ${INSTALL_ROOT}/WRF-${WRF_VERSION}/run
+prepend-path            PATH             ${INSTALL_ROOT}/WPS-${WPS_VERSION}
 
 module load netcdf/${NETCDF_C_VERSION} jasper/${JASPER_VERSION}
 
