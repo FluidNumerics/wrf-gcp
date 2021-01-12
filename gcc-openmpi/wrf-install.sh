@@ -9,8 +9,7 @@ JASPER_VERSION="2.0.16"
 WRF_VERSION="4.2"
 WPS_VERSION="4.2"
 
-
-yum install -y cmake curl-devel tcsh libjasper-devel libpng-devel
+yum install -y cmake curl-devel tcsh jasper-devel libpng-devel
 
 ## Install the GCC-9 devtoolset
 yum -y update
@@ -106,7 +105,7 @@ tar -xvzf /tmp/v${NETCDF_C_VERSION}.tar.gz -C /tmp
 cd /tmp/netcdf-c-${NETCDF_C_VERSION}
 CC=/opt/rh/devtoolset-9/root/usr/bin/gcc \
 CXX=/opt/rh/devtoolset-9/root/usr/bin/g++ \
-Fc=/opt/rh/devtoolset-9/root/usr/bin/gfortran \
+FC=/opt/rh/devtoolset-9/root/usr/bin/gfortran \
 CPPFLAGS="-I${INSTALL_ROOT}/hdf5/include -I${INSTALL_ROOT}/openmpi/include -I${INSTALL_ROOT}/netcdf/include" \
 LDFLAGS="-L${INSTALL_ROOT}/hdf5/lib -L${INSTALL_ROOT}/netcdf/lib" \
 ./configure --enable-pnetcdf \
@@ -149,30 +148,30 @@ module load hdf5/${HDF5_VERSION}
 EOL
 
 
-### Install Jasper
-wget https://github.com/mdadams/jasper/archive/version-${JASPER_VERSION}.tar.gz -P /tmp
-tar -xvzf /tmp/version-${JASPER_VERSION}.tar.gz -C /tmp
-mkdir /tmp/jasper-version-${JASPER_VERSION}/build
-cd /tmp/jasper-version-${JASPER_VERSION}/build
-cmake -DJAS_ENABLE_LIBJPEG=true \
-      -DJAS_ENABLE_SHARED=true \
-      -DCMAKE_INSTALL_PREFIX=${INSTALL_ROOT}/jasper \
-      /tmp/jasper-version-${JASPER_VERSION}
-make -j
-make -j install
-mkdir -p ${INSTALL_ROOT}/modulefiles/jasper
-cat > ${INSTALL_ROOT}/modulefiles/jasper/${JASPER_VERSION} <<EOL
-#%Module 1.0
-
-conflict                jasper
-
-prepend-path            LD_LIBRARY_PATH             ${INSTALL_ROOT}/jasper/lib64
-prepend-path            PATH             ${INSTALL_ROOT}/jasper/bin
-
-setenv JASPERLIB ${INSTALL_ROOT}/jasper/lib64
-setenv JASPERINC ${INSTALL_ROOT}/jasper/include/jasper
-EOL
-
+#### Install Jasper
+#wget https://github.com/mdadams/jasper/archive/version-${JASPER_VERSION}.tar.gz -P /tmp
+#tar -xvzf /tmp/version-${JASPER_VERSION}.tar.gz -C /tmp
+#mkdir /tmp/jasper-version-${JASPER_VERSION}/build
+#cd /tmp/jasper-version-${JASPER_VERSION}/build
+#cmake -DJAS_ENABLE_LIBJPEG=true \
+#      -DJAS_ENABLE_SHARED=true \
+#      -DCMAKE_INSTALL_PREFIX=${INSTALL_ROOT}/jasper \
+#      /tmp/jasper-version-${JASPER_VERSION}
+#make -j
+#make -j install
+#mkdir -p ${INSTALL_ROOT}/modulefiles/jasper
+#cat > ${INSTALL_ROOT}/modulefiles/jasper/${JASPER_VERSION} <<EOL
+##%Module 1.0
+#
+#conflict                jasper
+#
+#prepend-path            LD_LIBRARY_PATH             ${INSTALL_ROOT}/jasper/lib64
+#prepend-path            PATH             ${INSTALL_ROOT}/jasper/bin
+#
+#setenv JASPERLIB ${INSTALL_ROOT}/jasper/lib64
+#setenv JASPERINC ${INSTALL_ROOT}/jasper/include/jasper
+#EOL
+#
 ## Install WRF
 export I_really_want_to_output_grib2_from_WRF="TRUE" 
 export PATH=${PATH}:${INSTALL_ROOT}/openmpi/bin:${INSTALL_ROOT}/netcdf/bin
@@ -180,8 +179,8 @@ export NETCDF="${INSTALL_ROOT}/netcdf"
 export PNETCDF="${INSTALL_ROOT}/netcdf"
 export NETCDFF="${INSTALL_ROOT}/netcdf"
 export PHDF5="${INSTALL_ROOT}/hdf5"
-export JASPERINC="${INSTALL_ROOT}/jasper/include"
-export JASPERLIB="${INSTALL_ROOT}/jasper/lib64"
+export JASPERINC="/usr/include/jasper"
+export JASPERLIB="/usr/lib64"
 export FC="${INSTALL_ROOT}/openmpi/bin/mpif90"
 export CC="${INSTALL_ROOT}/openmpi/bin/mpicc"
 export WRF_DIR=${INSTALL_ROOT}/WRF-${WRF_VERSION}
@@ -193,6 +192,7 @@ cd /opt/WRF-${WRF_VERSION}
 ./configure << EOL
 34
 EOL
+sed -i 's/ time//g' configure.wrf
 ./compile -j $(nproc) em_real
 rm /opt/v${WRF_VERSION}.tar.gz
 
@@ -203,9 +203,9 @@ cd /opt/WPS-${WPS_VERSION}
 ./configure << EOL
 1
 EOL
+sed -i 's/ time / /g' configure.wps
 ./compile
 
-rm -rf /tmp/*
 rm -rf /var/tmp/*
 
 mkdir -p ${INSTALL_ROOT}/modulefiles/wrf
@@ -222,7 +222,7 @@ setenv WRF_VERSION ${WRF_VERSION}
 setenv WPS_VERSION ${WPS_VERSION}
 setenv WRF_DIR ${INSTALL_ROOT}/WRF-${WRF_VERSION}
 
-module load netcdf/${NETCDF_C_VERSION} jasper/${JASPER_VERSION}
+module load netcdf/${NETCDF_C_VERSION}
 
 EOL
 
