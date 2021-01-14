@@ -46,7 +46,6 @@ job_vars = {'ntasks':'@NTASKS@',
 
 def main():
 
-
     # Get the VM image for this host
     with open('jobs.yaml','r') as f:
       try:
@@ -57,29 +56,32 @@ def main():
     for hw in jobs['hardware']:
         for sw in jobs['software']:
             for spec in jobs['job_specs']:
-                envfile = compiler_env[sw['compiler']]
-                batch = SBATCH_TEMPLATE.replace('@COMPILER_ENV_FILE@',envfile)
-                path = PATH_TEMPLATE
 
-                for key in hw.keys():
-                    batch = batch.replace(hardware_vars[key],hw[key])
-                    path = path.replace(hardware_vars[key],hw[key])
-
-                for key in sw.keys():
-                    batch = batch.replace(software_vars[key],sw[key])
-                    path = path.replace(software_vars[key],sw[key])
-
-                for key in spec.keys():
-                    batch = batch.replace(job_vars[key],str(spec[key]))
-                    path = path.replace(job_vars[key],str(spec[key]))
-
-                # Make directory for slurm file
-                path_dir = '/'.join(path.split('/')[0:-1])
-                subprocess.run(['mkdir','-p',path_dir])
-
-                f = open(path,'w')
-                f.write(batch)
-                f.close()
+                if not hw['machine_type'] in spec['exclude_machines']:
+                    envfile = compiler_env[sw['compiler']]
+                    batch = SBATCH_TEMPLATE.replace('@COMPILER_ENV_FILE@',envfile)
+                    path = PATH_TEMPLATE
+    
+                    for key in hw.keys():
+                        batch = batch.replace(hardware_vars[key],hw[key])
+                        path = path.replace(hardware_vars[key],hw[key])
+    
+                    for key in sw.keys():
+                        batch = batch.replace(software_vars[key],sw[key])
+                        path = path.replace(software_vars[key],sw[key])
+    
+                    for key in spec.keys():
+                        if not key == 'exclude_machines':
+                           batch = batch.replace(job_vars[key],str(spec[key]))
+                           path = path.replace(job_vars[key],str(spec[key]))
+    
+                    # Make directory for slurm file
+                    path_dir = '/'.join(path.split('/')[0:-1])
+                    subprocess.run(['mkdir','-p',path_dir])
+    
+                    f = open(path,'w')
+                    f.write(batch)
+                    f.close()
 
 if __name__ == '__main__':
     main()

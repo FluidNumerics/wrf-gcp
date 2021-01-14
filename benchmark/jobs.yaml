@@ -10,9 +10,25 @@ hardware:
 
 software:
     - compiler: 'gcc'
-      mpi_flavor: 'openmpi'
+      mpi_flavor: 'ompi'
 
 job_specs:
     - ntasks: 30
       ntasks_per_node: 30
       affinity_flags: ''
+      exclude_machines: ['']
+
+    - ntasks: 48
+      ntasks_per_node: 48
+      affinity_flags: ''
+      exclude_machines: ['n2-standard-80','n2d-standard-224','c2-standard-60']
+
+    - ntasks: 40
+      ntasks_per_node: 40
+      affinity_flags: ''
+      exclude_machines: ['n1-standard-96','n2d-standard-224','c2-standard-60']
+
+    - ntasks: 112
+      ntasks_per_node: 112
+      affinity_flags: ''
+      exclude_machines: ['n1-standard-96','n2-standard-80','c2-standard-60']
