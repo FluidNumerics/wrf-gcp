@@ -1,0 +1,18 @@
+
+hardware:
+    - machine_type: 'n1-standard-96'
+
+    - machine_type: 'n2-standard-80'
+
+    - machine_type: 'n2d-standard-224'
+
+    - machine_type: 'c2-standard-60'
+
+software:
+    - compiler: 'gcc'
+      mpi_flavor: 'openmpi'
+
+job_specs:
+    - ntasks: 30
+      ntasks_per_node: 30
+      affinity_flags: ''
