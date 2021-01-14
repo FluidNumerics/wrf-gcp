@@ -32,3 +32,18 @@ job_specs:
       ntasks_per_node: 112
       affinity_flags: ''
       exclude_machines: ['n1-standard-96','n2-standard-80','c2-standard-60']
+
+    - ntasks: 96
+      ntasks_per_node: 96
+      affinity_flags: ''
+      exclude_machines: ['n2-standard-80','n2d-standard-224','c2-standard-60']
+
+    - ntasks: 80
+      ntasks_per_node: 80
+      affinity_flags: ''
+      exclude_machines: ['n1-standard-96','n2d-standard-224','c2-standard-60']
+
+    - ntasks: 224
+      ntasks_per_node: 224
+      affinity_flags: ''
+      exclude_machines: ['n1-standard-96','n2-standard-80','c2-standard-60']
