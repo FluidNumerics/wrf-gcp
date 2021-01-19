@@ -17,6 +17,7 @@ tar -xvzf /opt/benchmark/wps-input/geog_low_res_mandatory.tar.gz -C /opt/benchma
 
 rm /opt/benchmark/wps-input/*.tar.gz
 
+# GRIB can be found at https://rda.ucar.edu/datasets/ds084.1/
 gsutil cp gs://wrf-gcp-benchmark-data/benchmark/conus-2.5km/*.grib2 /opt/benchmark/wps-input
 
 
