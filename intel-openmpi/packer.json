@@ -2,7 +2,7 @@
   "variables": {
     "project_id": "",
     "zone": "us-central1-f",
-    "image_name":"wrf-gcp-intel-openmpi",
+    "image_name":"wrf-gcp-intel-impi",
     "subnet": "default",
     "source_image": "fluid-slurm-gcp-compute-centos",
     "source_image_project": "fluid-cluster-ops"
@@ -25,18 +25,24 @@
   "provisioners": [
     {
       "type": "file",
-      "source": "./intel-openmpi/sysctl.conf",
-      "destination": "/etc/sysctl.conf"
+      "source": "./benchmark/",
+      "destination": "/tmp/"
     },
     {
-      "type": "file",
-      "source": "./intel-openmpi/configure.wrf",
-      "destination": "/tmp/configure.wrf"
+      "type": "shell",
+      "inline": ["sudo mkdir /opt/benchmark", 
+	         "sudo mv /tmp/wrfstats.py /opt/benchmark/",
+	         "sudo mv /tmp/conus-2.5km /opt/benchmark/"]
     },
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
       "script": "./intel-openmpi/wrf-install.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
+      "script": "./intel-openmpi/data-install.sh"
     }
   ]
 }

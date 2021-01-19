@@ -8,13 +8,15 @@ SBATCH_TEMPLATE="""#!/bin/bash
 #SBATCH --partition=@MACHINE_TYPE@-@COMPILER@-@MPI_FLAVOR@
 #SBATCH --ntasks=@NTASKS@
 #SBATCH --ntasks-per-node=@NTASKS_PER_NODE@
+#SBATCH --mem-per-cpu=@MEM_PER_CPU@g
 #SBATCH --cpus-per-task=1
+#SBATCH --exclusive
 #SBATCH --account=wrf-users
 #
 # /////////////////////////////////////////////// #
 
 WORK_PATH=${HOME}/wrf-benchmark/@COMPILER@-@MPI_FLAVOR@/@MACHINE_TYPE@/ntasks-@NTASKS@/ppn-@NTASKS_PER_NODE@/
-MPI_FLAGS="--report-bindings --np $SLURM_NTASKS @AFFINITY_FLAGS@" 
+MPI_FLAGS="@MPI_OPTS@ --np $SLURM_NTASKS @AFFINITY_FLAGS@" 
 
 source @COMPILER_ENV_FILE@
 module use /opt/modulefiles
@@ -28,7 +30,7 @@ ln -s /opt/WRF-4.2/run/* .
 
 mpirun $MPI_FLAGS ./wrf.exe
 
-python3 wrfstats.py "--ntasks=@NTASKS@ --ntasks-per-node=@NTASKS_PER_NODE@ --cpus-per-task=1" $MPI_FLAGS $SLURM_JOB_NUM_NODES
+python3 wrfstats.py "--ntasks=@NTASKS@ --ntasks-per-node=@NTASKS_PER_NODE@ --mem-per-cpu=@MEM_PER_CPU@g --cpus-per-task=1" "$MPI_FLAGS" $SLURM_JOB_NUM_NODES
 
 """
 
@@ -36,10 +38,12 @@ compiler_env = {'gcc':'/opt/rh/devtoolset-9/enable',
                 'intel':'/opt/intel/oneapi/setvars.sh'}
 hardware_vars = {'machine_type':'@MACHINE_TYPE@'}
 software_vars = {'compiler':'@COMPILER@',
-                 'mpi_flavor':'@MPI_FLAVOR@'}
+                 'mpi_flavor':'@MPI_FLAVOR@',
+                 'mpi_opts':'@MPI_OPTS@'}
 job_vars = {'ntasks':'@NTASKS@',
             'ntasks_per_node':'@NTASKS_PER_NODE@',
-            'affinity_flags':'@AFFINITY_FLAGS@'}
+            'affinity_flags':'@AFFINITY_FLAGS@',
+            'mem_per_cpu_gb':'@MEM_PER_CPU@'}
 
 #'@COMPILER_ENV_FILE@',
 

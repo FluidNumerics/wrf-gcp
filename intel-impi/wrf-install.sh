@@ -4,14 +4,13 @@ HDF5_VERSION="1.12.0"
 PNETCDF_VERSION="1.12.1"
 NETCDF_C_VERSION="4.7.4"
 NETCDF_FORTRAN_VERSION="4.5.3"
-JASPER_VERSION="2.0.16"
 WRF_VERSION="4.2"
 WPS_VERSION="4.2"
 
 
 #mv /tmp/systemctl.conf /etc/systemctl.conf
 
-yum install -y cmake curl-devel tcsh libjasper-devel libpng-devel
+yum install -y cmake curl-devel tcsh jasper-devel libpng-devel
 
 # Install the oneAPI base kit and HPC toolkit
 cat >/etc/yum.repos.d/oneAPI.repo <<EOF
@@ -45,9 +44,11 @@ cd /var/tmp/hdf5-${HDF5_VERSION}
 # Configure
 CC=/opt/intel/oneapi/mpi/latest/bin/mpiicc \
 CXX=/opt/intel/oneapi/mpi/latest/bin/mpiicpc \
-F77=/opt/intel/oneapi/mpi/latest/bin/mpiifort \
-F90=/opt/intel/oneapi/mpi/latest/bin/mpiifort \
+F9X=/opt/intel/oneapi/mpi/latest/bin/mpiifort \
 FC=/opt/intel/oneapi/mpi/latest/bin/mpiifort \
+CFLAGS='-O3 -xHost -ip' \
+CXXFLAGS='-O3 -xHost -ip' \
+FCFLAGS='-O3 -xHost -ip' \
 ./configure --prefix=${INSTALL_ROOT}/hdf5 --enable-parallel --enable-threadsafe --enable-unsupported --enable-cxx --enable-fortran
 make -j$(nproc)
 make -j$(nproc) install && \
@@ -125,28 +126,6 @@ module load hdf5/${HDF5_VERSION}
 EOL
 
 
-### Install Jasper
-wget https://github.com/mdadams/jasper/archive/version-${JASPER_VERSION}.tar.gz -P /tmp
-tar -xvzf /tmp/version-${JASPER_VERSION}.tar.gz -C /tmp
-mkdir /tmp/jasper-version-${JASPER_VERSION}/build
-cd /tmp/jasper-version-${JASPER_VERSION}/build
-cmake -DJAS_ENABLE_LIBJPEG=true \
-      -DJAS_ENABLE_SHARED=true \
-      -DCMAKE_INSTALL_PREFIX=${INSTALL_ROOT}/jasper \
-      /tmp/jasper-version-${JASPER_VERSION}
-make -j
-make -j install
-mkdir -p ${INSTALL_ROOT}/modulefiles/jasper
-cat > ${INSTALL_ROOT}/modulefiles/jasper/${JASPER_VERSION} <<EOL
-#%Module 1.0
-
-conflict                jasper
-
-prepend-path            LD_LIBRARY_PATH             ${INSTALL_ROOT}/jasper/lib64
-prepend-path            PATH             ${INSTALL_ROOT}/jasper/bin
-
-EOL
-
 ## Install WRF
 export I_really_want_to_output_grib2_from_WRF="TRUE" 
 export PATH=${PATH}:${INSTALL_ROOT}/netcdf/bin
@@ -154,8 +133,8 @@ export NETCDF="${INSTALL_ROOT}/netcdf"
 export PNETCDF="${INSTALL_ROOT}/netcdf"
 export NETCDFF="${INSTALL_ROOT}/netcdf"
 export PHDF5="${INSTALL_ROOT}/hdf5"
-export JASPERINC="${INSTALL_ROOT}/jasper/include"
-export JASPERLIB="${INSTALL_ROOT}/jasper/lib64"
+export JASPERINC="/usr/include/jasper"
+export JASPERLIB="/usr/lib64"
 export CC=/opt/intel/oneapi/mpi/latest/bin/mpiicc
 export FC=/opt/intel/oneapi/mpi/latest/bin/mpiifort
 export WRF_DIR=${INSTALL_ROOT}/WRF-${WRF_VERSION}
@@ -188,7 +167,7 @@ conflict                wrf
 prepend-path            PATH             ${INSTALL_ROOT}/WRF-${WRF_VERSION}/run
 prepend-path            PATH             ${INSTALL_ROOT}/WPS-${WPS_VERSION}
 
-module load netcdf/${NETCDF_C_VERSION} jasper/${JASPER_VERSION}
+module load netcdf/${NETCDF_C_VERSION}
 
 EOL
 

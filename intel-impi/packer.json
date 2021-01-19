@@ -25,13 +25,14 @@
   "provisioners": [
     {
       "type": "file",
-      "sources": ["./intel-impi/configure.wrf","./intel-impi/configure.wps"],
+      "source": "./benchmark/",
       "destination": "/tmp/"
     },
     {
-      "type": "file",
-      "source": "./benchmark/",
-      "destination": "/tmp/"
+      "type": "shell",
+      "inline": ["sudo mkdir /opt/benchmark", 
+	         "sudo mv /tmp/wrfstats.py /opt/benchmark/",
+	         "sudo mv /tmp/conus-2.5km /opt/benchmark/"]
     },
     {
       "type": "shell",
@@ -41,7 +42,7 @@
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
-      "script": "./benchmark/data-install.sh"
+      "script": "./intel-impi/data-install.sh"
     }
   ]
 }

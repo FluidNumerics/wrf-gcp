@@ -11,39 +11,58 @@ hardware:
 software:
     - compiler: 'gcc'
       mpi_flavor: 'ompi'
+      mpi_opts: '--report-bindings'
+
+    - compiler: 'intel'
+      mpi_flavor: 'impi'
+      mpi_opts: '-genv I_MPI_FABRICS shm'
+
 
 job_specs:
     - ntasks: 30
       ntasks_per_node: 30
       affinity_flags: ''
+      mem_per_cpu_gb: 2
       exclude_machines: ['']
 
     - ntasks: 48
       ntasks_per_node: 48
       affinity_flags: ''
+      mem_per_cpu_gb: 2
       exclude_machines: ['n2-standard-80','n2d-standard-224','c2-standard-60']
 
     - ntasks: 40
       ntasks_per_node: 40
       affinity_flags: ''
+      mem_per_cpu_gb: 2
       exclude_machines: ['n1-standard-96','n2d-standard-224','c2-standard-60']
+
+    - ntasks: 60
+      ntasks_per_node: 60
+      affinity_flags: ''
+      mem_per_cpu_gb: 2
+      exclude_machines: ['n1-standard-96','n2d-standard-224','n2-standard-80']
 
     - ntasks: 112
       ntasks_per_node: 112
       affinity_flags: ''
+      mem_per_cpu_gb: 2
       exclude_machines: ['n1-standard-96','n2-standard-80','c2-standard-60']
 
     - ntasks: 96
       ntasks_per_node: 96
       affinity_flags: ''
+      mem_per_cpu_gb: 2
       exclude_machines: ['n2-standard-80','n2d-standard-224','c2-standard-60']
 
     - ntasks: 80
       ntasks_per_node: 80
       affinity_flags: ''
+      mem_per_cpu_gb: 2
       exclude_machines: ['n1-standard-96','n2d-standard-224','c2-standard-60']
 
     - ntasks: 224
       ntasks_per_node: 224
       affinity_flags: ''
+      mem_per_cpu_gb: 2
       exclude_machines: ['n1-standard-96','n2-standard-80','c2-standard-60']
