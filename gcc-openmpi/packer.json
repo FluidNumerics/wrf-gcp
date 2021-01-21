@@ -35,6 +35,19 @@
 	         "sudo mv /tmp/conus-2.5km /opt/benchmark/"]
     },
     {
+      "type": "file",
+      "source": "./gcc-openmpi/optimizations/sysctl.conf",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "shell",
+      "inline":[ "sudo mv /tmp/sysctl.conf /etc/sysctl.conf",
+                 "sudo sysctl -p", 
+	         "sudo systemctl stop firewalld",
+                 "sudo systemctl disable firewalld",
+                 "sudo systemctl mask --now firewalld"]
+    },
+    {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
       "script": "./gcc-openmpi/wrf-install.sh"
