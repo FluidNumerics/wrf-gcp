@@ -143,19 +143,24 @@ wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WRF_VERSION}.tar.gz -C /opt
 sed -i 's/\ $I_really_want_to_output_grib2_from_WRF = "FALSE" ;//g' /opt/WRF-${WRF_VERSION}/arch/Config.pl 
 cd /opt/WRF-${WRF_VERSION}
-./configure << EOL
-20
-EOL
-./compile -j $(nproc) em_real
+./clean
+./configure << EOF
+15
+
+EOF
+sed -i 's/mpif90/mpiifort/g' configure.wrf
+sed -i 's/mpicc/mpiicc/g' configure.wrf
+sed -i 's/ time//g' configure.wrf
+./compile -j $(nproc) em_real || ./compile -j $(nproc) em_real
 rm /opt/v${WRF_VERSION}.tar.gz
 
 # Install WPS
 wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P /opt
 tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C /opt
+cd /opt/WPS-${WPS_VERSION}
 ./configure << EOL
 17
 EOL
-cd /opt/WPS-${WPS_VERSION}
 ./compile
 
 mkdir -p ${INSTALL_ROOT}/modulefiles/wrf

@@ -2,7 +2,7 @@
   "variables": {
     "project_id": "",
     "zone": "us-central1-f",
-    "image_name":"wrf-gcp-intel-impi",
+    "image_name":"wrf-gcp-gcc-openmpi",
     "subnet": "default",
     "source_image": "fluid-slurm-gcp-compute-centos",
     "source_image_project": "fluid-cluster-ops"
@@ -12,7 +12,7 @@
     "project_id": "{{user `project_id`}}",
     "source_image": "{{user `source_image`}}",
     "source_image_project_id": "{{user `source_image_project`}}",
-    "disk_size": 50,
+    "disk_size": 150,
     "machine_type": "n1-standard-8",
     "zone": "{{user `zone`}}",
     "subnetwork" :"{{user `subnet`}}",
@@ -35,14 +35,34 @@
 	         "sudo mv /tmp/conus-2.5km /opt/benchmark/"]
     },
     {
+      "type": "file",
+      "source": "./builds/generic/gcc/openmpi/optimizations/sysctl.conf",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "file",
+      "source": "./builds/generic/gcc/openmpi/optimizations/grub",
+      "destination": "/tmp/"
+    },
+    {
       "type": "shell",
-      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
-      "script": "./intel-impi/wrf-install.sh"
+      "inline":[ "sudo mv /tmp/sysctl.conf /etc/sysctl.conf",
+	         "sudo mv /tmp/grub /etc/default/grub",
+                 "sudo sysctl -p", 
+		 "sudo grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg",
+	         "sudo systemctl stop firewalld",
+                 "sudo systemctl disable firewalld",
+                 "sudo systemctl mask --now firewalld"]
     },
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
-      "script": "./intel-impi/data-install.sh"
+      "script": "./builds/generic/gcc/openmpi/wrf-install.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
+      "script": "./benchmark/conus-2.5km/data-install-from-gcs.sh"
     }
   ]
 }

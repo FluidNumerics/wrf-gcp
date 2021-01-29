@@ -76,8 +76,14 @@ def main():
     
                     for key in spec.keys():
                         if not key == 'exclude_machines':
-                           batch = batch.replace(job_vars[key],str(spec[key]))
-                           path = path.replace(job_vars[key],str(spec[key]))
+                           if key == 'ntasks_per_node':
+                              hw_vcpu_count = int(hw['machine_type'].split('-')[-1])
+                              ntasks_per_node = min(hw_vcpu_count, spec[key])
+                              batch = batch.replace(job_vars[key],str(ntasks_per_node))
+                              path = path.replace(job_vars[key],str(ntasks_per_node))
+                           else:
+                              batch = batch.replace(job_vars[key],str(spec[key]))
+                              path = path.replace(job_vars[key],str(spec[key]))
     
                     # Make directory for slurm file
                     path_dir = '/'.join(path.split('/')[0:-1])

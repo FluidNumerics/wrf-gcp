@@ -2,7 +2,7 @@
   "variables": {
     "project_id": "",
     "zone": "us-central1-f",
-    "image_name":"wrf-gcp-gcc-openmpi",
+    "image_name":"wrf-gcp-intel-openmpi",
     "subnet": "default",
     "source_image": "fluid-slurm-gcp-compute-centos",
     "source_image_project": "fluid-cluster-ops"
@@ -36,13 +36,20 @@
     },
     {
       "type": "file",
-      "source": "./gcc-openmpi/optimizations/sysctl.conf",
+      "source": "./builds/generic/intel/openmpi/optimizations/sysctl.conf",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "file",
+      "source": "./builds/generic/intel/openmpi/optimizations/grub",
       "destination": "/tmp/"
     },
     {
       "type": "shell",
       "inline":[ "sudo mv /tmp/sysctl.conf /etc/sysctl.conf",
+	         "sudo mv /tmp/grub /etc/default/grub",
                  "sudo sysctl -p", 
+		 "sudo grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg",
 	         "sudo systemctl stop firewalld",
                  "sudo systemctl disable firewalld",
                  "sudo systemctl mask --now firewalld"]
@@ -50,12 +57,12 @@
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
-      "script": "./gcc-openmpi/wrf-install.sh"
+      "script": "./builds/generic/intel/openmpi/wrf-install.sh"
     },
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
-      "script": "./gcc-openmpi/data-install.sh"
+      "script": "./benchmark/conus-2.5km/data-install-from-gcs.sh"
     }
   ]
 }
