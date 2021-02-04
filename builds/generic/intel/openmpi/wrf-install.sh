@@ -75,9 +75,9 @@ CXX=${INSTALL_ROOT}/openmpi/bin/mpic++ \
 F9X=${INSTALL_ROOT}/openmpi/bin/mpifort \
 F90=${INSTALL_ROOT}/openmpi/bin/mpifort \
 FC=${INSTALL_ROOT}/openmpi/bin/mpifort \
-CFLAGS='-O3 -xHost -ip' \
-CXXFLAGS='-O3 -xHost -ip' \
-FCFLAGS='-O3 -xHost -ip' \
+CFLAGS='-O3 -ip' \
+CXXFLAGS='-O3 -ip' \
+FCFLAGS='-O3 -ip' \
 ./configure --prefix=${INSTALL_ROOT}/hdf5 --enable-parallel --enable-threadsafe --enable-unsupported --enable-cxx --enable-fortran
 make -j$(nproc)
 make -j$(nproc) install && \
@@ -106,7 +106,7 @@ wget https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz
 tar -xvzf /tmp/pnetcdf-${PNETCDF_VERSION}.tar.gz -C /tmp
 cd /tmp/pnetcdf-${PNETCDF_VERSION}
 ./configure --enable-shared \
-            --prefix=${INSTALL_ROOT}/netcdf --with-mpi=/opt/intel/oneapi/mpi/latest/
+            --prefix=${INSTALL_ROOT}/netcdf --with-mpi=${INSTALL_ROOT}/openmpi
 make check
 make -j install
 
@@ -179,8 +179,10 @@ cd /opt/WRF-${WRF_VERSION}
 EOL
 sed -i 's/DM_FC           =.*/DM_FC=\/opt\/openmpi\/bin\/mpifort/g' configure.wrf
 sed -i 's/DM_CC           =.*/DM_CC=\/opt\/openmpi\/bin\/mpicc/g' configure.wrf
-sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL=-w -O3 -fp-model-fast=2 -no-prec-div -no-prec-sqrt -ftz -no-multibyte-chars/g' configure.wrf
-sed -i 's/FCOPTIM         =.*/FCOPTIM=-w -O3 -fp-model-fast=2 -no-prec-div -no-prec-sqrt -ftz -no-multibyte-chars/g' configure.wrf
+#sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL=-w -O3 -fp-model-fast=2 -no-prec-div -no-prec-sqrt -ftz -no-multibyte-chars/g' configure.wrf
+#sed -i 's/FCOPTIM         =.*/FCOPTIM=-w -O3 -fp-model-fast=2 -no-prec-div -no-prec-sqrt -ftz -no-multibyte-chars/g' configure.wrf
+sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL=-w -O2 -g -traceback -check all -debug all/g' configure.wrf
+sed -i 's/FCOPTIM         =.*/FCOPTIM=-w -O2 -g -traceback -check all -debug all/g' configure.wrf
 sed -i 's/ time / /g' configure.wrf
 ./compile -j $(nproc) em_real
 rm /opt/v${WRF_VERSION}.tar.gz

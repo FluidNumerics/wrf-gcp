@@ -50,6 +50,7 @@ setenv MPICXX ${INSTALL_ROOT}/openmpi/bin/mpic++
 setenv MPICC ${INSTALL_ROOT}/openmpi/bin/mpicc
 setenv MPIFC ${INSTALL_ROOT}/openmpi/bin/mpif90
 setenv MPIEXEC ${INSTALL_ROOT}/openmpi/bin/mpiexec
+setenv MPIRUN ${INSTALL_ROOT}/openmpi/bin/mpirun
 
 EOL
 

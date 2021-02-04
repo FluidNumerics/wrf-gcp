@@ -63,6 +63,11 @@
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
       "script": "./benchmark/conus-2.5km/data-install-from-gcs.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
+      "script": "./benchmark/conus-12km/data-install-from-gcs.sh"
     }
   ]
 }

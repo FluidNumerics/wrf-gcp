@@ -173,6 +173,7 @@ prepend-path            PATH             ${INSTALL_ROOT}/WRF-${WRF_VERSION}/run
 prepend-path            PATH             ${INSTALL_ROOT}/WPS-${WPS_VERSION}
 
 module load netcdf/${NETCDF_C_VERSION}
+setenv MPIRUN ${INSTALL_ROOT}/openmpi/bin/mpirun
 
 EOL
 

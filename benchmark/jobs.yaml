@@ -11,7 +11,7 @@ hardware:
 software:
     - compiler: 'gcc'
       mpi_flavor: 'ompi'
-      mpi_opts: '--report-bindings'
+      mpi_opts: '--map-by core --bind-to hwthread --report-bindings'
 
     - compiler: 'intel'
       mpi_flavor: 'impi'
@@ -26,6 +26,7 @@ job_specs:
     - ntasks: 30
       ntasks_per_node: 30
       affinity_flags: ''
+      cpus_per_task: 2
       mem_per_cpu_gb: 2
       exclude_machines: ['']
 
@@ -33,82 +34,117 @@ job_specs:
       ntasks_per_node: 40
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 2
       exclude_machines: ['']
 
     - ntasks: 48
       ntasks_per_node: 48
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 2
       exclude_machines: ['']
 
     - ntasks: 60
       ntasks_per_node: 60
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
+      exclude_machines: ['']
+
+    - ntasks: 60
+      ntasks_per_node: 30
+      affinity_flags: ''
+      mem_per_cpu_gb: 2
+      cpus_per_task: 2
       exclude_machines: ['']
 
     - ntasks: 80
       ntasks_per_node: 80
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
 
     - ntasks: 96
       ntasks_per_node: 96
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
 
     - ntasks: 112
       ntasks_per_node: 112
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 2
       exclude_machines: ['']
 
     - ntasks: 120
       ntasks_per_node: 60
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
 
     - ntasks: 160
       ntasks_per_node: 80
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
       
     - ntasks: 192
       ntasks_per_node: 96
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
 
     - ntasks: 224
       ntasks_per_node: 224
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
 
     - ntasks: 240
       ntasks_per_node: 60
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
 
     - ntasks: 448
       ntasks_per_node: 224
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
 
     - ntasks: 480
       ntasks_per_node: 60
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
 
     - ntasks: 480
       ntasks_per_node: 80
       affinity_flags: ''
       mem_per_cpu_gb: 2
+      cpus_per_task: 1
+      exclude_machines: ['']
+
+    - ntasks: 960
+      ntasks_per_node: 60
+      affinity_flags: ''
+      mem_per_cpu_gb: 2
+      cpus_per_task: 1
+      exclude_machines: ['']
+
+    - ntasks: 1920
+      ntasks_per_node: 60
+      affinity_flags: ''
+      mem_per_cpu_gb: 2
+      cpus_per_task: 1
       exclude_machines: ['']
