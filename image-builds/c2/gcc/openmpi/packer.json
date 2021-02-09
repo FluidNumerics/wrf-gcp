@@ -32,16 +32,17 @@
       "type": "shell",
       "inline": ["sudo mkdir /opt/benchmark", 
 	         "sudo mv /tmp/wrfstats.py /opt/benchmark/",
-	         "sudo mv /tmp/conus-2.5km /opt/benchmark/"]
+	         "sudo mv /tmp/conus-2.5km /opt/benchmark/",
+	         "sudo mv /tmp/conus-12km /opt/benchmark/"]
     },
     {
       "type": "file",
-      "source": "./builds/generic/gcc/openmpi/optimizations/sysctl.conf",
+      "source": "./builds/c2/gcc/openmpi/optimizations/sysctl.conf",
       "destination": "/tmp/"
     },
     {
       "type": "file",
-      "source": "./builds/generic/gcc/openmpi/optimizations/grub",
+      "source": "./builds/c2/gcc/openmpi/optimizations/grub",
       "destination": "/tmp/"
     },
     {
@@ -57,7 +58,7 @@
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
-      "script": "./builds/generic/gcc/openmpi/wrf-install.sh"
+      "script": "./builds/c2/gcc/openmpi/wrf-install.sh"
     },
     {
       "type": "shell",
@@ -69,7 +70,6 @@
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
       "script": "./benchmark/conus-12km/data-install-from-gcs.sh"
     }
-
   ]
 }
 

@@ -1,11 +1,11 @@
 #!/bin/bash
 
+PROJECT_ID=wrf-gcp
 INSTALL_ROOT=/opt
 DATA_PREFIX=/opt/benchmark/wps-input/gfs.0p25.2018061700
 
 # Install benchmark data
-mv /tmp/benchmark /opt/
-gsutil cp gs://wrf-gcp-benchmark-data/benchmark/conus-12km/* /opt/benchmark/conus-12km/
+gsutil -u ${PROJECT_ID} cp gs://wrf-gcp-benchmark-data/benchmark/conus-12km/* /opt/benchmark/conus-12km/
 
 # Use WPS to create input deck
 cd /opt/benchmark/conus-12km
