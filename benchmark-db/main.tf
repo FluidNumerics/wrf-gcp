@@ -147,5 +147,146 @@ resource "google_bigquery_table" "benchmark_data" {
   }
 ]
 EOF
+}
 
+resource "google_bigquery_table" "benchmark_info" {
+  dataset_id = google_bigquery_dataset.wrf_benchmarks.dataset_id
+  table_id = "benchmark_info"
+  project = "wrf-gcp"
+
+  schema = <<EOF
+[
+  {
+    "name": "benchmark_name",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "Name of the benchmark that is run."
+  },
+  {
+    "name": "inputdeck_url",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "URL pointing to namelist.wps, namelist.input, and necessary initial conditions, boundary conditions, and forcing related fields."
+  },
+  {
+    "name": "n_timesteps",
+    "type": "INT64",
+    "mode": "NULLABLE",
+    "description": "Number of forward timesteps"
+  },
+  {
+    "name": "simulation_duration_hrs",
+    "type": "FLOAT64",
+    "mode": "NULLABLE",
+    "description": "The simulation duration/forecast period."
+  },
+  {
+    "name": "n_filewrites",
+    "type": "INT64",
+    "mode": "REQUIRED",
+    "description": "Number of model states written to file"
+  },
+  {
+    "name": "nx",
+    "type": "INT64",
+    "mode": "REQUIRED",
+    "description": "Number of longitudinal grid cells"
+  },
+  {
+    "name": "ny",
+    "type": "INT64",
+    "mode": "REQUIRED",
+    "description": "Number of latitudinal grid cells"
+  },
+  {
+    "name": "nz",
+    "type": "INT64",
+    "mode": "REQUIRED",
+    "description": "Number of vertical grid cells"
+  }
+]
+EOF
+}
+
+resource "google_bigquery_table" "compute_systems" {
+  dataset_id = google_bigquery_dataset.wrf_benchmarks.dataset_id
+  table_id = "compute_systems"
+  project = "wrf-gcp"
+
+  schema = <<EOF
+[
+  {
+    "name": "system_id",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "A unique identifier for an HPC system entry. A unique system consists of a unique set of all of the variables listed in this compute_systems table. For heterogeneous HPC clusters, there are multiple possible systems"
+  },
+  {
+    "name": "system_provider",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "The name of the provider for the HPC system. For cloud resources, the system provider follows the convention PROVIDER-SOLUTION, where PROVIDER is the name of the cloud provider and SOLUTION is the name of the deployment solution used for benchmarking (e.g. google-fluidslurmgcp, azure-cyclecloud)"
+  },
+  {
+    "name": "scheduler_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The name of the job scheduler, if one is used, for this system. Options are slurm, pbs, htcondor, other, none"
+  },
+  {
+    "name": "operating_system",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The name and version of the operating system (e.g. centos-7)"
+  },
+  {
+    "name": "linux_kernel",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "If a Linux operating system is used, the kernel version that is used on the compute nodes for the system"
+  },
+  {
+    "name": "compute_node_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Node type as classified by the system provider (e.g. on aws ec2, on gcp c2-standard-60)"
+  },
+  {
+    "name": "compute_mem_gb_per_node",
+    "type": "INT64",
+    "mode": "NULLABLE",
+    "description": "The amount of memory in GB on each compute node"
+  },
+  {
+    "name": "compute_logical_cores_per_node",
+    "type": "INT64",
+    "mode": "REQUIRED",
+    "description": "The number of logical cores (hyperthreads) available on each compute node"
+  },
+  {
+    "name": "compute_physical_cores_per_node",
+    "type": "INT64",
+    "mode": "REQUIRED",
+    "description": "The number of physical cores available on each compute node"
+  },
+  {
+    "name": "compute_platform",
+    "type": "INT64",
+    "mode": "REQUIRED",
+    "description": "Vendor Make/Model (e.g. Intel Xeon E5, AMD EPYC7200 Rome)"
+  },
+  {
+    "name": "iac_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "URL to Infrastructure-as-code (for cloud deployment reproducibility)"
+  },
+  {
+    "name": "io_filesystem_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "One of NFS, Lustre, GPFS"
+  }
+]
+EOF
 }
