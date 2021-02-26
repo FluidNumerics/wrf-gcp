@@ -98,6 +98,12 @@ variable "controller_machine_type" {
   description = "GCP Machine type to use for the login node."
 }
 
+variable "controller_disk_size_gb" { 
+  type = number
+  description = "Size of the controller boot disk in GB."
+  default = 100
+}
+
 variable "default_partition" {
   type = string
   description = "Name of the default compute partition."
@@ -107,6 +113,12 @@ variable "default_partition" {
 variable "login_machine_type" {
   type = string
   description = "GCP Machine type to use for the login node."
+}
+
+variable "login_disk_size_gb" { 
+  type = number
+  description = "Size of the login boot disk in GB."
+  default = 100
 }
 
 variable "partitions" {

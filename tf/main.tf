@@ -128,6 +128,7 @@ resource "google_compute_subnetwork" "shared_vpc_subnetworks" {
   ip_cidr_range = cidrsubnet("10.10.0.0/8", 8, count.index+11)
   region = local.regions[count.index]
   network = google_compute_network.shared_vpc_network.self_link
+  project = var.primary_project
 }
 
 // Create a map that takes in zone and returns subnet (for partition creation)
@@ -203,61 +204,12 @@ locals {
 }
 
 */
-// Create the Cloud SQL instance
-resource "google_compute_global_address" "private_ip_address" {
-  provider = google-beta
-  name = "private-ip-address"
-  purpose = "VPC_PEERING"
-  address_type = "INTERNAL"
-  prefix_length = 16
-  network = google_compute_network.shared_vpc_network.id
-  project = var.primary_project
-}
-
-resource "google_service_networking_connection" "private_vpc_connection" {
-  provider = google-beta
-  network = google_compute_network.shared_vpc_network.id
-  service = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
-  depends_on = [google_project_service.service_networking]
-}
-
-// Create a random suffix - CloudSQL names cannot be reused within 7 days of use
-resource "random_id" "db_name_suffix" {
-  byte_length = 4
-}
-
-resource "google_sql_database_instance" "slurm_db" {
-  provider = google-beta
-  name = "${var.cluster_name}-db-${random_id.db_name_suffix.hex}"
-  database_version = "MYSQL_5_6"
-  deletion_protection = false
-  region = local.primary_region
-  project = var.primary_project
-  depends_on = [google_service_networking_connection.private_vpc_connection,google_project_service.sql_admin,google_project_service.compute]
-
-  settings {
-    tier = var.cloud_sql_tier
-    ip_configuration {
-      ipv4_enabled  = false
-      private_network = google_compute_network.shared_vpc_network.id
-    }
-  }
-}
-
-locals {
-  slurm_db = {"cloudsql_name":google_sql_database_instance.slurm_db.name, 
-              "cloudsql_ip":google_sql_database_instance.slurm_db.private_ip_address,
-              "cloudsql_port":6819}
-}
-
-
 // *************************************************** //
 
 locals {
   controller = {
     machine_type = var.controller_machine_type
-    disk_size_gb = 100
+    disk_size_gb = var.controller_disk_size_gb
     disk_type = "pd-standard"
     labels = {"slurm-gcp"="controller"}
     project = var.primary_project
@@ -267,7 +219,7 @@ locals {
   }
   login = [{
     machine_type = var.login_machine_type
-    disk_size_gb = 100
+    disk_size_gb = var.login_disk_size_gb
     disk_type = "pd-standard"
     labels = {"slurm-gcp"="login"}
     project = var.primary_project
@@ -347,7 +299,6 @@ module "slurm_gcp" {
   login = local.login
   partitions = local.partitions
   slurm_accounts = var.slurm_accounts
-  slurm_db = local.slurm_db
   mounts = []
 }
 

@@ -23,12 +23,12 @@ partitions = [{name = "n1-standard-96"
                project = "wrf-gcp"
                max_time = "8:00:00"
                labels = {"slurm-gcp"="compute"}
-               machines = [{ name = "n1st96-us-west1-b"
+               machines = [{ name = "n1-96"
                              gpu_count = 0
                              gpu_type = ""
-                             image = "projects/fluid-cluster-ops/global/images/fluid-slurm-gcp-compute-centos"
+                             image = "projects/wrf-gcp/global/images/wrf-gcp-gcc-openmpi"
                              machine_type = "n1-standard-96"
-                             max_node_count = 5
+                             max_node_count = 50
                              zone = "us-west1-b"
                           }]
                },
@@ -36,12 +36,12 @@ partitions = [{name = "n1-standard-96"
                project = "wrf-gcp"
                max_time = "8:00:00"
                labels = {"slurm-gcp"="compute"}
-               machines = [{ name = "n2st80-us-west1-b"
+               machines = [{ name = "n2-80"
                              gpu_count = 0
                              gpu_type = ""
-                             image = "projects/fluid-cluster-ops/global/images/fluid-slurm-gcp-compute-centos"
+                             image = "projects/wrf-gcp/global/images/wrf-gcp-gcc-openmpi-n2"
                              machine_type = "n2-standard-80"
-                             max_node_count = 5
+                             max_node_count = 50
                              zone = "us-west1-b"
                           }]
                },
@@ -49,12 +49,12 @@ partitions = [{name = "n1-standard-96"
                project = "wrf-gcp"
                max_time = "8:00:00"
                labels = {"slurm-gcp"="compute"}
-               machines = [{ name = "n2dst224-us-west1-b"
+               machines = [{ name = "n2d-224"
                              gpu_count = 0
                              gpu_type = ""
-                             image = "projects/fluid-cluster-ops/global/images/fluid-slurm-gcp-compute-centos"
+                             image = "projects/wrf-gcp/global/images/wrf-gcp-gcc-openmpi-n2d"
                              machine_type = "n2d-standard-224"
-                             max_node_count = 5
+                             max_node_count = 50
                              zone = "us-west1-b"
                           }]
                },
@@ -62,12 +62,12 @@ partitions = [{name = "n1-standard-96"
                project = "wrf-gcp"
                max_time = "8:00:00"
                labels = {"slurm-gcp"="compute"}
-               machines = [{ name = "c2st60-us-west1-b"
+               machines = [{ name = "c2-60"
                              gpu_count = 0
                              gpu_type = ""
-                             image = "projects/fluid-cluster-ops/global/images/fluid-slurm-gcp-compute-centos"
+                             image = "projects/wrf-gcp/global/images/wrf-gcp-gcc-openmpi-c2"
                              machine_type = "c2-standard-60"
-                             max_node_count = 5
+                             max_node_count = 50
                              zone = "us-west1-b"
                           }]
                }
