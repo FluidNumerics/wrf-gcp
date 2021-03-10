@@ -169,6 +169,8 @@ cd /opt/WRF-${WRF_VERSION}
 34
 EOL
 sed -i 's/ time//g' configure.wrf
+sed -i 's/FCOPTIM         =.*/FCOPTIM = -fopenmp -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
+sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL = -fopenmp -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
 ./compile -j $(nproc) em_real
 rm /opt/v${WRF_VERSION}.tar.gz
 
@@ -180,10 +182,6 @@ cd /opt/WPS-${WPS_VERSION}
 1
 EOL
 sed -i 's/ time / /g' configure.wps
-# Replace flags with -march=znver2 -Ofast -ftree-vectorize -funroll-loops
-# See https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-sed -i 's/FCOPTIM         =.*/FCOPTIM = -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
-sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL = -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
 ./compile
 
 rm -rf /var/tmp/*
