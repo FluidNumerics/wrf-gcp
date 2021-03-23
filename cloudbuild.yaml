@@ -6,11 +6,11 @@ steps:
         "-force",
         "-var","project_id=$PROJECT_ID",
         "-var","zone=$_ZONE",
-        "-var","image_name=wrf-gcp-${_COMPILER}-${_MPI}-${_MACHINE}",
+        "-var","image_name=wrf-gcp",
         "-var","subnet=${_SUBNETWORK}",
         "-var","source_image=${_SOURCE_IMAGE}",
         "-var","source_image_project=${_SOURCE_IMAGE_PROJECT}",
-        './builds/${_MACHINE}/${_COMPILER}/${_MPI}/packer.json']
+        './image-builds/packer.json']
   waitFor: ["-"]
 
 substitutions:
@@ -18,8 +18,5 @@ substitutions:
     _SUBNETWORK : 'default'
     _SOURCE_IMAGE : 'fluid-slurm-gcp-compute-centos'
     _SOURCE_IMAGE_PROJECT : 'fluid-cluster-ops'
-    _COMPILER: 'gcc'
-    _MPI: 'openmpi'
-    _MACHINE: 'generic'
 
 timeout : 14400s
