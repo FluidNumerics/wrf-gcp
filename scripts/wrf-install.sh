@@ -18,10 +18,10 @@ WRF_VERSION="4.2"
 WPS_VERSION="4.2"
 
 # Install spack
-git clone https://github.com/spack/spack.git --b ${SPACK_VERSION} /apps/spack
+git clone https://github.com/spack/spack.git --branch ${SPACK_VERSION} ${INSTALL_ROOT}/spack
 echo "export SPACK_ROOT=/apps/spack" > /etc/profile.d/setup_spack.sh
 echo ". \${SPACK_ROOT}/share/spack/setup-env.sh" >> /etc/profile.d/setup_spack.sh
-source /apps/spack/share/spack/setup-env.sh
+source ${INSTALL_ROOT}/spack/share/spack/setup-env.sh
 spack compiler find --scope site
 
 # Hand-edits for packages.yaml
@@ -67,28 +67,27 @@ export FC=$(spack location -i openmpi)/bin/mpif90
 export CC=$(spack location -i openmpi)/bin/mpicc
 export WRF_DIR=${INSTALL_ROOT}/WRF-${WRF_VERSION}
 
-wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz -P /opt
-tar -xvzf /opt/v${WRF_VERSION}.tar.gz -C /opt
-sed -i 's/\ $I_really_want_to_output_grib2_from_WRF = "FALSE" ;//g' /opt/WRF-${WRF_VERSION}/arch/Config.pl 
+wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz -P ${INSTALL_ROOT}
+tar -xvzf /opt/v${WRF_VERSION}.tar.gz -C /${INSTALL_ROOT}
+sed -i 's/\ $I_really_want_to_output_grib2_from_WRF = "FALSE" ;//g' ${INSTALL_ROOT}/WRF-${WRF_VERSION}/arch/Config.pl 
 cd /opt/WRF-${WRF_VERSION}
 ./configure << EOL
 34
 EOL
 sed -i 's/ time//g' configure.wrf
-
+sed -i 's/FCOPTIM         =.*/FCOPTIM = -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
+sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL = -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
 ./compile -j $(nproc) em_real
-rm /opt/v${WRF_VERSION}.tar.gz
+rm ${INSTALL_ROOT}/v${WRF_VERSION}.tar.gz
 
 # Install WPS
-wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P /opt
-tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C /opt
-cd /opt/WPS-${WPS_VERSION}
+wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P ${INSTALL_ROOT}
+tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C ${INSTALL_ROOT}
+cd ${INSTALL_ROOT}/WPS-${WPS_VERSION}
 ./configure << EOL
 1
 EOL
 sed -i 's/ time / /g' configure.wps
-sed -i 's/FCOPTIM         =.*/FCOPTIM = -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
-sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL = -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
 ./compile
 
 rm -rf /var/tmp/*
