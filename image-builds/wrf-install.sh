@@ -11,6 +11,11 @@ WPS_VERSION="4.2"
 
 yum install -y cmake curl-devel tcsh jasper-devel libpng-devel
 
+# Add patch for increasing the max number of open file handles
+# This supports launching jobs with large number of MPI ranks
+echo "* soft nofile 16384" >> /etc/security/limits.conf
+echo "* hard nofile 16384" >> /etc/security/limits.conf
+
 ## Install the GCC-9 devtoolset
 yum -y update
 yum install -y centos-release-scl-rh
@@ -169,6 +174,8 @@ cd /opt/WRF-${WRF_VERSION}
 34
 EOL
 sed -i 's/ time//g' configure.wrf
+sed -i 's/FCOPTIM         =.*/FCOPTIM = -fopenmp -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
+sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL = -fopenmp -Ofast -ftree-vectorize -funroll-loops -march=cascadelake/g' configure.wrf
 ./compile -j $(nproc) em_real
 rm /opt/v${WRF_VERSION}.tar.gz
 
@@ -180,10 +187,6 @@ cd /opt/WPS-${WPS_VERSION}
 1
 EOL
 sed -i 's/ time / /g' configure.wps
-# Replace flags with -march=znver2 -Ofast -ftree-vectorize -funroll-loops
-# See https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-sed -i 's/FCOPTIM         =.*/FCOPTIM = -Ofast -ftree-vectorize -funroll-loops -march=znver2/g' configure.wrf
-sed -i 's/CFLAGS_LOCAL    =.*/CFLAGS_LOCAL = -Ofast -ftree-vectorize -funroll-loops -march=znver2/g' configure.wrf
 ./compile
 
 rm -rf /var/tmp/*
