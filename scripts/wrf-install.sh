@@ -68,9 +68,9 @@ export CC=$(spack location -i openmpi)/bin/mpicc
 export WRF_DIR=${INSTALL_ROOT}/WRF-${WRF_VERSION}
 
 wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz -P ${INSTALL_ROOT}
-tar -xvzf /opt/v${WRF_VERSION}.tar.gz -C /${INSTALL_ROOT}
+tar -xvzf ${INSTALL_ROOT}/v${WRF_VERSION}.tar.gz -C /${INSTALL_ROOT}
 sed -i 's/\ $I_really_want_to_output_grib2_from_WRF = "FALSE" ;//g' ${INSTALL_ROOT}/WRF-${WRF_VERSION}/arch/Config.pl 
-cd /opt/WRF-${WRF_VERSION}
+cd ${INSTALL_ROOT}/WRF-${WRF_VERSION}
 ./configure << EOL
 34
 EOL
@@ -82,7 +82,7 @@ rm ${INSTALL_ROOT}/v${WRF_VERSION}.tar.gz
 
 # Install WPS
 wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz -P ${INSTALL_ROOT}
-tar -xvzf /opt/v${WPS_VERSION}.tar.gz -C ${INSTALL_ROOT}
+tar -xvzf ${INSTALL_ROOT}/v${WPS_VERSION}.tar.gz -C ${INSTALL_ROOT}
 cd ${INSTALL_ROOT}/WPS-${WPS_VERSION}
 ./configure << EOL
 1
